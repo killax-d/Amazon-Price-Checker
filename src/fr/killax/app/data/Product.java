@@ -11,7 +11,8 @@ public class Product {
 	private String url;
 	private double requestedPrice;
 	private User user;
-	private ImageBase64 image;
+	private ImageBase64 image64;
+	private String imageUrl;
 	private String delivry;
 	private String features;
 	
@@ -20,6 +21,7 @@ public class Product {
 	private static String priceThreshold = "priceblock_ourprice";
 	private static String delivryThreshold = "ddmDeliveryMessage";
 	private static String featuresThreshold = "feature-bullets";
+	private static String imageThreshold = ".imgTagWrapper";
 
 	public Product(String url, double requestedPrice, User user) {
 		this.url = url;
@@ -40,9 +42,15 @@ public class Product {
 	    this.name = ((Element) doc.getElementById(nameThreshold)).text();
 	    String rawPrice = ((Element) doc.getElementById(priceThreshold)).text().replace(",", ".");
 	    this.price = Double.parseDouble(rawPrice.substring(0, rawPrice.length()-2));
-	    this.image = new ImageBase64(doc.select(".imgTagWrapper").first().child(0).attr("src"));
+	    this.image64 = new ImageBase64(doc.select(imageThreshold).first().child(0).attr("src"));
+		this.imageUrl = doc.select(imageThreshold).first().child(0).attr("data-old-hires");
+	    
+	    // replace details link with the product url
+	    doc.getElementById(delivryThreshold).selectFirst("a").attr("href", url);
 	    this.delivry = doc.getElementById(delivryThreshold).html();
-	    this.features = doc.getElementById(featuresThreshold).html();
+	    
+	    
+	    this.features = doc.getElementById(featuresThreshold).child(0).html();
 	    
 	    System.out.println(String.format("Item : %s CHECKED.", name));
 	    if(price < requestedPrice)
@@ -62,7 +70,11 @@ public class Product {
 	}
 	
 	public ImageBase64 getImage() {
-		return image;
+		return image64;
+	}
+	
+	public String getImageUrl() {
+		return imageUrl;
 	}
 	
 	public String getDelivry() {

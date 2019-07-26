@@ -47,7 +47,7 @@ public class Email {
 				user, 
 				product.getName(), 
 				product.getPrice(), 
-				product.getImage(), 
+				product.getImageUrl(),
 				product.getName(), 
 				product.getFeatures(), 
 				product.getDelivry()
